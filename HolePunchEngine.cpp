@@ -49,14 +49,14 @@ HolePunchEngine* HolePunchEngine::get_holepunch_engine_instance() {
     return holePunchEngineInstance;
 }
 
-void __run_sending(vector<UDPSocket> &receiving_sockets) {
+void __run_sending(vector<UDPSocket> *receiving_sockets) {
 
     char buffer[11] = {0};
     memccpy(buffer, "send punch", 0, 11);
 
     while (!HolePunchEngine::get_holepunch_engine_instance()->sending_state()) {
-        for (UDPSocket sock : receiving_sockets) {
-            sock.send_udp(&buffer, 11);
+        for (UDPSocket sock : *receiving_sockets) {
+            sock.send_udp(&buffer, 11, sock.get_port());
         }
     }
     cout << "\t** Exiting sending thread..." << endl;
@@ -77,7 +77,7 @@ void __run_receiving(UDPSocket *udp_socket) {
 
 void HolePunchEngine::run_engine(vector<UDPSocket> &receiving_sockets) {
 
-    thread send_t = thread(__run_sending, receiving_sockets);
+    thread send_t = thread(__run_sending, &receiving_sockets);
     send_t.join();
 
     const ulong recv_socks = receiving_sockets.size();

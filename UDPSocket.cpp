@@ -19,6 +19,10 @@ int UDPSocket::get_socket_handle() const {
     return socket_fd;
 }
 
+int UDPSocket::get_port() const {
+	return ntohs(sa.sin_port);
+}
+
 void UDPSocket::set_socket_handle(int __socket_fd) {
     socket_fd = __socket_fd;
 }
@@ -30,12 +34,18 @@ void UDPSocket::set_ip_address(const string &__ipv4) {
 int UDPSocket::bind_socket_to_port(uint16_t port) {
     sa.sin_family = AF_INET;
     sa.sin_port = htons(port);
-    sa.sin_addr.s_addr = htonl(inet_addr(ipv4.c_str()));
+    sa.sin_addr.s_addr = INADDR_ANY;
+    //sa.sin_addr.s_addr = htonl(inet_addr(ipv4.c_str()));
     int bind_error = bind(socket_fd, (sockaddr*) &sa, sizeof(sa));
     return bind_error;
 }
 
-ssize_t UDPSocket::send_udp(const void *__buffer, size_t __len) {
+ssize_t UDPSocket::send_udp(const void *__buffer, size_t __len, int dest_port) {
+	send_sa.sin_family = AF_INET;
+	hostent *server = gethostbyname("10.10.10.10");
+	bcopy((char*)server->h_addr, (char*)&send_sa.sin_addr.s_addr, server->h_length);
+	send_sa.sin_port = htons(dest_port);
+	cout << "Sending Message to: " << inet_ntoa(send_sa.sin_addr) << ":" << ntohs(send_sa.sin_port) << endl;
     ssize_t send_error = sendto(socket_fd, __buffer, __len, 0, (sockaddr*) &sa, sizeof(sa));
     return send_error;
 }
