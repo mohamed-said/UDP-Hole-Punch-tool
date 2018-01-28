@@ -25,21 +25,16 @@ int main() {
 
     const int n_recv_ports = 5;
 
-    string server_ip = "10.10.10.10";
-    uint16_t server_port = 5555;
+    string server_ip = "172.19.1.27";
 
     uint16_t receiving_ports[n_recv_ports] = {55123, 57321, 59456, 61654, 64789};
-
-    UDPSocket sending_Socket;
-    sending_Socket.init_socket();
-    sending_Socket.set_ip_address(server_ip);
-    sending_Socket.bind_socket_to_port(server_port);
 
     vector<UDPSocket> receiving_sockets(n_recv_ports);
 
     int i = 0;
-    for (UDPSocket sock : receiving_sockets) {
-        sock.init_socket();
+    for (UDPSocket &sock : receiving_sockets) {
+        int sock_ret = sock.init_socket();
+        cout << "Socket #" << i << ":" << sock_ret << endl;
         sock.set_ip_address(server_ip);
         sock.bind_socket_to_port(receiving_ports[i++]);
     }

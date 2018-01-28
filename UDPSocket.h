@@ -33,13 +33,12 @@ public:
     void set_socket_handle(int __socket_fd);
     void set_ip_address(const string &__ipv4);
     int get_socket_handle() const;
-    int get_port() const;
+    uint16_t get_port() const;
     int init_socket();
     int bind_socket_to_port(uint16_t port);
-    ssize_t send_udp(const void *__buffer, size_t __len, int);
+    ssize_t send_udp(const void *__buffer, size_t __len, uint16_t);
     ssize_t recv_udp(void *__buffer, size_t &__len);
     sockaddr_in get_client_data();
-
 };
 
 
